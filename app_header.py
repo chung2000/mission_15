@@ -5,8 +5,9 @@ model_dict = {
     "ViT (기본)": "google/vit-base-patch16-224",
     "ResNet-50 (고속)": "microsoft/resnet-50",
     "ConvNeXt (최신)": "facebook/convnext-tiny-224",
-    "MobileNet (경량)": "google/mobilenet_v2_1.0_224",
-    "Qwen2-VL (경량)": "Qwen/Qwen2-VL-2B-Instruct"
+    "MobileNet (경량)": "google/mobilenet_v2_1.0_224"
+    ##, "Qwen2-VL (경량)": "Qwen/Qwen2-VL-2B-Instruct
+    ##, "Qwen2-VL (초경량)": "Qwen/Qwen2-VL-Chat"
 }
 
 def sidebar_menu():
