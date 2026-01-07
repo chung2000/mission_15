@@ -3,7 +3,8 @@ from transformers import pipeline
 from PIL import Image
 import torch
 import time
-from app_header import sidebar_menu
+#from app_header import sidebar_menu
+from app_header_test import sidebar_menu
 
 # --- 1. 페이지 설정 및 사이드바 ---
 st.set_page_config(page_title="ViT Image Classifier", layout="centered")
