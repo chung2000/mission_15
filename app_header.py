@@ -11,7 +11,7 @@ def sidebar_menu():
 
     with st.sidebar:
         st.header("설정")
-        uploaded_file = st.file_uploader("이미지 파일 업로드(224x224 크기)", type=['jpg'])
+        uploaded_file = st.file_uploader("이미지 파일 업로드(224x224 크기)", type=['jpg', 'png'])
 
         chart_type = st.selectbox("차트 종류 선택", ["Line Chart", "Bar Chart", "Area Chart"])
 

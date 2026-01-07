@@ -3,6 +3,10 @@ from app_header import sidebar_menu  # 파일명에서 함수를 가져옵니다
 
 import pandas as pd
 import numpy as np
+from PIL import Image
+import torch
+
+from transformers import pipeline
 
 #페이지 기본설정
 st.set_page_config(layout="wide", page_title="데이터분석 대시보드")
@@ -13,34 +17,55 @@ st.markdown("---")
 # 1. 사이드바 호출 및 선택 값 받아오기
 uploaded_file, chart_type = sidebar_menu()
 
+@st.cache_resource
+def load_model():
+    # GPU 사용 가능 여부 확인 (0이면 GPU, -1이면 CPU)
+    device_id = 0 if torch.cuda.is_available() else -1
+
+    # task와 model을 각각 지정해줍니다.
+    return pipeline(task="image-classification", model="google/vit-base-patch16-224", device=device_id)
+
+
 #[메인] 데이터 처리 로직
 if uploaded_file is not None:
-    df = pd.read_csv(uploaded_file)
-    st.success("파일 업로드 성공")
+    #df = pd.read_csv(uploaded_file)
+    #st.success("파일 업로드 성공")
+    st.toast('이미지 업로드가 완료되었습니다!', icon='✅')
+
+    #st.image(uploaded_file)
+    # width 파라미터에 픽셀 값을 숫자로 입력합니다.
+    #st.image(uploaded_file, caption="600px 너비로 출력", width=600)
+    # 2. 이미지 처리 및 출력
+    image = Image.open(uploaded_file)
+    st.image(image, caption="업로드된 이미지", width=224)
+
+    # 여기서 바로 모델 예측(Inference) 함수를 호출하면 됩니다.
+    st.success("이제 분석을 시작할 수 있습니다.")
+
+    st.button("분류하기")
+    ##if st.button("분석하기"):
 else:
-    #실습용 더미 데이터 생성(파일이 없을 경우)
-    st.info("csv 파일을 업로드하면 해당 데이터로 분석합니다. 현재는 샘플 데이터입니다.")
-    df = pd.DataFrame(
-        np.random.randn(20, 3),
-        columns=['A', 'B', 'C']
-    )
+    with st.spinner("AI 모델 로딩중..."):
+        classifier = load_model()
 
-# [레이아웃] 다중 컬럼으로 화면 분할
-col1, col2 = st.columns(2)
+    st.write("문장을 입력하면 긍정인지 부정인지 분석합니다.")
 
-with col1:
-    st.subheader("데이터 미리보기")
-    st.dataframe(df.head(10))
+    user_input = st.text_area("분석할 텍스트 입력", "나는 AI 엔지니어링과정이 재미있습니다.")
 
-with col2:
-    st.subheader("데이터 시각화")
-    if chart_type == "Line Chart":
-        st.line_chart(df)
-    elif chart_type == "Bar Chart":
-        st.bar_chart(df)
-    elif chart_type == "Area Chart":
-        st.area_chart(df)
+    if st.button("분석하기"):
+        if user_input:
+            result = classifier(user_input)[0]
+            label = result['label']
+            score = result['score']
 
-#통계 요약
-st.subheader("기초 통계")
-st.write(df.describe())
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("감성결과", label)
+            with col2:
+                st.metric("Socre", f"{score:.2%}")
+
+            if label == "POSITIVE":
+                st.success("긍정입니다")
+            else:
+                st.error("부정입니다")
+
