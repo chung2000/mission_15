@@ -1,5 +1,8 @@
 pandas
 numpy
+pillow
+Pillow
+timm
 
 streamlit
 #streamlit-drawable-canvas
@@ -7,5 +10,5 @@ streamlit
 torch
 transformers
 huggingface_hub[hf_xet]
-
-pillow
+qwen-vl-utils
+accelerate

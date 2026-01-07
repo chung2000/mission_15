@@ -3,89 +3,102 @@ from transformers import pipeline
 from PIL import Image, ImageDraw, ImageFont
 import torch
 import time
-from app_header import sidebar_menu
+import os
+import sys
+
+# Streamlit Cloud 경로 문제 해결을 위한 설정
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from object_detection_header import sidebar_menu, model_dict
 
 # 1. 페이지 설정
-st.set_page_config(page_title="AI Vision Tool", layout="centered")
+st.set_page_config(page_title="AI Multi-Vision Tool", layout="centered")
 
-# 2. 사이드바 메뉴 (기존 기능 유지)
-top_k_count = sidebar_menu()
+# 2. 사이드바 및 모델 정보 가져오기
+selected_name, top_k_count = sidebar_menu()
+model_id = model_dict[selected_name]
 
 
-# 3. 모델 로드 함수 (분류용 & 탐지용)
+# 3. 모델 로드 (태스크 자동 판별)
 @st.cache_resource
-def load_models(task_type):
+def load_vision_model(m_id):
     device_id = 0 if torch.cuda.is_available() else -1
-    if task_type == "Classification":
-        return pipeline("image-classification", model="google/vit-base-patch16-224", device=device_id)
+
+    # 모델 이름에 따라 태스크 자동 결정
+    if "detr" in m_id.lower():
+        task = "object-detection"
     else:
-        return pipeline("object-detection", model="facebook/detr-resnet-50", device=device_id)
+        task = "image-classification"
+
+    return pipeline(task=task, model=m_id, device=device_id), task
 
 
-# 4. 메인 UI
-st.title("🤖 AI 비전 통합 분석기")
-task = st.radio("수행할 작업을 선택하세요", ["Classification (분류)", "Object Detection (탐지)"], horizontal=True)
+with st.spinner(f"[{selected_name}] 모델을 로드 중입니다..."):
+    vision_model, current_task = load_vision_model(model_id)
 
-# 모델 로드
-task_key = "Classification" if "Classification" in task else "Detection"
-model_pipeline = load_models(task_key)
+# 4. 메인 화면 구성
+st.title("🤖 통합 이미지 분석기")
+st.write(f"현재 모드: **{current_task.upper()}**")
 
-uploaded_file = st.file_uploader("이미지 업로드", type=['jpg', 'jpeg', 'png', 'jfif', 'webp'])
+uploaded_file = st.file_uploader(
+    "이미지를 업로드하세요",
+    type=['jpg', 'jpeg', 'png', 'jfif', 'webp']
+)
 
 if uploaded_file is not None:
-    # 이미지 준비
+    # 이미지 로드 및 RGB 변환 (webp, jfif 등 호환성 확보)
     image = Image.open(uploaded_file).convert("RGB")
-    st.image(image, caption="원본 이미지", use_container_width=True)
+    st.image(image, caption="업로드된 이미지", use_container_width=True)
 
+    # [중요] 이미지 바로 아래 알림 전용 공간
     alert_placeholder = st.empty()
 
-    # --- 분석 실행 ---
-    with st.spinner(f'{task_key} 분석 중...'):
-        results = model_pipeline(image)
+    # 5. 분석 실행
+    with st.spinner('AI 분석 진행 중...'):
+        results = vision_model(image)
 
-    alert_placeholder.success(f"🚀 {task_key} 완료!")
+    alert_placeholder.success("🚀 분석 완료!")
 
-    # --- 결과 시각화 ---
-    if task_key == "Classification":
-        st.subheader("📊 분류 결과")
+    # 6. 결과 시각화 (태스크별 분기)
+    if current_task == "image-classification":
+        st.subheader("📊 분류 결과 (Top-K)")
         for res in results[:top_k_count]:
             col1, col2 = st.columns([1, 4])
-            with col1: st.write(f"**{res['label']}**")
+            with col1:
+                st.write(f"**{res['label']}**")
             with col2:
                 st.progress(res['score'])
                 st.write(f"{round(res['score'] * 100, 2)}%")
 
-    else:
-        st.subheader("🎯 탐지된 객체 위치")
-        # 이미지 위에 박스 그리기
-        draw = ImageDraw.Draw(image)
+    elif current_task == "object-detection":
+        st.subheader("🎯 객체 탐지 결과")
 
-        # 폰트 설정 (기본 폰트 사용, 리눅스/윈도우 호환)
-        try:
-            font = ImageFont.load_default()
-        except:
-            font = None
+        # 박스를 그리기 위한 이미지 복사
+        draw_img = image.copy()
+        draw = ImageDraw.Draw(draw_img)
 
         for res in results:
             box = res['box']
             label = res['label']
             score = res['score']
 
-            # 박스 그리기 [xmin, ymin, xmax, ymax]
+            # 박스 그리기
             draw.rectangle(
                 [(box['xmin'], box['ymin']), (box['xmax'], box['ymax'])],
-                outline="red",
-                width=4
+                outline="red", width=4
             )
-            # 라벨 표시
+            # 라벨 텍스트
             draw.text((box['xmin'], box['ymin'] - 10), f"{label} {round(score * 100, 1)}%", fill="red")
 
-        # 박스가 그려진 이미지 출력
-        st.image(image, caption="탐지 결과 이미지", use_container_width=True)
+        # 결과 이미지 출력
+        st.image(draw_img, caption="탐지된 사물 위치", use_container_width=True)
 
-        # 탐지 목록 표기
+        # 탐지 목록 요약
         for res in results:
             st.write(f"📍 발견: **{res['label']}** (신뢰도: {round(res['score'] * 100, 2)}%)")
 
+    # 3초 뒤 알림 지우기
     time.sleep(3)
     alert_placeholder.empty()
+
+else:
+    st.info("이미지를 업로드하면 분석이 시작됩니다.")
