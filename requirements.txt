@@ -1,5 +1,10 @@
-streamlit
-streamlit-drawable-canvas
+pandas
+numpy
 
-transformers
+streamlit
+#streamlit-drawable-canvas
+
 torch
+transformers
+
+pillow
