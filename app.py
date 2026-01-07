@@ -3,11 +3,12 @@ from transformers import pipeline
 from PIL import Image
 import torch
 import time
-from app_header import sidebar_menu
+from app_header import sidebar_menu, model_dict
 
 # --- 1. 페이지 설정 및 사이드바 ---
 st.set_page_config(page_title="ViT Image Classifier", layout="centered")
-selected_model = sidebar_menu()
+##selected_model = sidebar_menu()
+selected_name, selected_id  = sidebar_menu()
 
 
 # --- 2. 모델 로드 (캐싱 및 GPU 설정) ---
@@ -22,13 +23,19 @@ def load_model():
         device=device_id
     )
 
+@st.cache_resource
+def load_select_model(m_id):
+    device_id = 0 if torch.cuda.is_available() else -1
+    return pipeline(task="image-classification", model=m_id, device=device_id)
+
 
 with st.spinner("AI 모델을 불러오는 중입니다..."):
-    classifier = load_model()
+    #classifier = load_model()
+    classifier = load_select_model(selected_id)
 
 # --- 3. 메인 UI 및 파일 업로드 ---
 st.title("Vision Transformer 분석기")
-st.write(f"현재 활성화된 모델: **{selected_model}**")
+st.write(f"현재 활성화된 모델: **{selected_name}**")
 
 ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'jfif', 'webp']
 
