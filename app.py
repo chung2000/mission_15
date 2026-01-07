@@ -3,6 +3,12 @@ from transformers import pipeline
 from PIL import Image
 import torch
 import time
+
+import sys
+import os
+# 현재 파일이 있는 디렉토리를 파이썬 경로에 추가
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from app_header import sidebar_menu, model_dict
 
 # --- 1. 페이지 설정 및 사이드바 ---
