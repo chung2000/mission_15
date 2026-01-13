@@ -3,77 +3,74 @@ mission_17
 
 [Streamlit Cloud URL](https://mission15-lrpurpfnraysfwswf8aoia.streamlit.app/) : https://mission15-lrpurpfnraysfwswf8aoia.streamlit.app/
 
-# 🖼️ AI 멀티 모델 광고 카피 생성기 (Streamlit App)
+# 🤖 Hybrid Vision AI: Multi-Task Image Analyzer
 
-사용자가 입력한 제품명과 키워드를 바탕으로 **AWS Bedrock의 최신 LLM들**이 매력적인 광고 문구를 제안하는 **마케팅 자동화 웹 서비스**입니다.
+사용자가 업로드한 이미지를 **일반 사물 분류(Classification)**부터 최신 멀티모달 LLM을 활용한 **대화형 시각 분석(VQA)**까지 수행하는 통합 AI 비전 웹 서비스입니다.
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://mission15-lrpurpfnraysfwswf8aoia.streamlit.app/)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://your-app-link.streamlit.app/)
 
-> **👉 서비스 바로가기:** [https://mission15-lrpurpfnraysfwswf8aoia.streamlit.app/](https://mission15-lrpurpfnraysfwswf8aoia.streamlit.app/)
+> **👉 서비스 바로가기:** [https://your-app-link.streamlit.app/](https://your-app-link.streamlit.app/)
 
 ---
 
 ## 📅 프로젝트 개요
 
-- **미션**: AWS Bedrock 환경에서 다양한 파운데이션 모델(Llama 3, EXAONE, Claude 등)을 연동하고, 비즈니스 목적에 맞는 광고 카피를 생성하는 AI 서비스를 구현합니다.
+- **미션**: 단순한 이미지 분류를 넘어, 객체 탐지 및 생성형 AI(Qwen2.5-VL)를 결합하여 이미지의 맥락을 깊이 있게 이해하는 고도화된 AI 서비스를 구현합니다.
 - **주요 기능**:
-  - 🤖 **멀티 모델 스위칭**: Llama 3, EXAONE 등 원하는 AI 모델을 직접 선택하여 결과 비교
-  - 🎭 **톤앤매너 맞춤 생성**: '감성적인', '긴박한', '유머러스한' 등 브랜드 이미지에 맞는 말투 설정
-  - 🔑 **키워드 최적화**: 입력한 핵심 키워드를 문구 속에 자연스럽게 녹여내 마케팅 효과 극대화
-  - ⚡ **실시간 생성**: 복잡한 설정 없이 단 몇 초 만에 3줄 이내의 SNS용 광고 카피 완성
-  - 📱 **반응형 UI**: PC와 모바일 어디서든 간편하게 카피라이팅 업무 수행 가능
+  - 🔍 **하이브리드 모드**: 고속 분류(ViT/ResNet)와 심층 대화형 분석(Qwen) 중 선택 가능
+  - 🎯 **객체 탐지(Object Detection)**: 이미지 내 사물의 위치를 파악하고 바운딩 박스 시각화
+  - 💬 **Visual Question Answering**: 이미지 속 상황에 대해 AI와 자연어로 질의응답
+  - ⚡ **최적화된 추론**: 모델별 전용 프로세서 및 캐싱 기술을 통한 응답 속도 향상
+  - 📱 **반응형 디자인**: `width='stretch'` 옵션을 적용하여 PC와 모바일 모두 최적화된 레이아웃 제공
 
 ---
 
 ## 🖥️ 실행 화면
 
-|          PC 메인 화면           |            결과 확인 화면            |
-| :------------------------: | :-------------------------------: |
-|  ![PC 메인](main_pc.png)   | ![결과 화면](result_view.png) |
-| _제품 정보 및 모델 설정_ |      _생성된 광고 문구 확인_      |
+|          이미지 분류 및 탐지           |            대화형 AI 분석             |
+| :-------------------------------: | :-------------------------------: |
+| ![분류 결과 예시](classification_sample.png) | ![Qwen 분석 예시](qwen_sample.png) |
+| _ViT/DETR 모델을 이용한 분석_ | _Qwen2.5-VL 모델과의 시각적 대화_ |
 
 ---
 
 ## 🛠️ 기술 스택 및 사용 모델
 
-이 서비스는 **Streamlit** 프레임워크를 기반으로 **AWS 클라우드 인프라**를 활용합니다.
+이 서비스는 **Streamlit** 프레임워크를 기반으로 하며, Hugging Face의 최신 모델들을 활용합니다.
 
-### 1. 인프라 및 엔진
-- **Cloud**: AWS Bedrock (Serverless LLM Service)
-- **Framework**: Streamlit
-- **SDK**: `boto3` (AWS SDK for Python)
+### 1. 표준 비전 모델 (Standard Vision)
+- **Classification**: `google/vit-base-patch16-224`, `microsoft/resnet-50`
+- **Object Detection**: `facebook/detr-resnet-50`
+- **Library**: `transformers`, `timm` (Backbone 지원), `Pillow`
 
-### 2. 사용 가능한 AI 모델 (LLMs)
-- **Meta Llama 3 70B**: 뛰어난 논리력과 창의적인 문장 구성 능력
-- **LG EXAONE 3.0**: 한국어 문맥 이해도가 높고 자연스러운 비즈니스 작문 지원
-- **Anthropic Claude 3 Haiku**: 빠른 속도와 효율적인 비용으로 가성비 높은 문구 생성
-
-
+### 2. 멀티모달 대화형 AI (Generative Vision)
+- **Model**: `Qwen/Qwen2.5-VL-3B-Instruct`
+- **특징**: 이미지 내 텍스트 인식(OCR), 사물 간의 관계 추론 및 상세 묘사에 특화
+- **Library**: `qwen-vl-utils`, `accelerate`
 
 ---
 
 ## 📝 개발 과정 및 트러블슈팅 (Troubleshooting)
 
-프로젝트를 진행하며 겪었던 주요 이슈와 해결 과정을 기록합니다.
+### Issue 1. Qwen 모델의 Pipeline 호환성 에러
+- **문제**: `pipeline("image-classification")` 사용 시 `NoneType` 관련 Embedding 에러 발생.
+- **해결**: Qwen 모델은 멀티모달 전용 `Processor`를 통해 이미지와 텍스트를 동시에 토큰화해야 함을 확인하고, 모델 타입에 따른 전용 추론 로직(Inference Logic)을 구축하여 해결했습니다.
 
-### Issue 1. 모델별 JSON 바디 규격 불일치
-- **문제**: Bedrock의 `invoke_model` 사용 시, 모델 제작사마다 요구하는 입력 데이터(Key 이름)가 달라 `ValidationException`이 발생했습니다.
-- **해결**: 모델별 전용 `Body` 생성 로직을 분기 처리했습니다. (Llama는 `prompt`, Claude는 `messages`, EXAONE은 특정 태그 구조 사용)
+### Issue 2. 의존성 라이브러리 충돌 및 누락
+- **문제**: 객체 탐지 모델 구동 시 `timm` 라이브러리 부재로 인한 `ImportError` 발생.
+- **해결**: `requirements.txt`에 `timm`과 `Pillow`를 명시하고, 설치 이름과 임포트 이름의 차이를 관리하여 배포 환경을 안정화했습니다.
 
-### Issue 2. 한국어 답변 품질 저하
-- **문제**: 일부 글로벌 모델에서 광고 문구가 영어로 출력되거나 번역 투 문장이 생성되었습니다.
-- **해결**: **시스템 프롬프트(System Instruction)**를 강화하여 "당신은 한국의 전문 마케터입니다"라는 역할을 부여하고, 출력 형식을 강제하여 품질을 높였습니다.
-
-### Issue 3. AWS 인증 보안 문제
-- **문제**: Streamlit Cloud 배포 시 AWS Access Key가 코드에 노출될 위험이 있었습니다.
-- **해결**: Streamlit의 `Secrets` 관리 기능을 활용하여 환경 변수를 안전하게 주입하도록 구현했습니다.
+### Issue 3. UI 가이드라인 준수 및 가독성 개선
+- **문제**: `use_container_width` 매개변수 업데이트로 인한 경고 메시지 발생.
+- **해결**: 최신 Streamlit 문법에 맞춰 이미지 출력 옵션을 `width='stretch'`로 변경하여 가부하를 줄이고 시각적 완성도를 높였습니다.
 
 ---
 
-## 📂 리포지토리 링크
+## 📂 리포지토리 구조
 
-소스 코드 및 상세 구현 내용은 아래 Github 저장소에서 확인하실 수 있습니다.
-👉 **Github**: [https://github.com/chung2000/mission_17](https://github.com/chung2000/mission_17)
+- `app.py`: 통합 서비스 메인 로직 및 UI 구성
+- `app_header.py`: 모델 딕셔너리 관리 및 사이드바 모듈화
+- `requirements.txt`: 서비스 운영을 위한 라이브러리 의존성 목록
 
 ---
 
