@@ -29,7 +29,7 @@ mission_17
 
 |          이미지 분류 및 탐지           |            대화형 AI 분석             |
 | :-------------------------------: | :-------------------------------: |
-| ![분류 결과 예시](classification_sample.png) | ![Qwen 분석 예시](qwen_sample.png) |
+| ![분류 결과 예시](main_image.png) | ![Qwen 분석 예시](qwen_sample.png) |
 | _ViT/DETR 모델을 이용한 분석_ | _Qwen2.5-VL 모델과의 시각적 대화_ |
 
 ---
