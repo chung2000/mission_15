@@ -3,6 +3,9 @@ mission_17
 
 [Streamlit Cloud URL](https://mission15-lrpurpfnraysfwswf8aoia.streamlit.app/) : https://mission15-lrpurpfnraysfwswf8aoia.streamlit.app/
 
+QWEN 구현은 로컬PC에서는 확인되었으나, Streamlit Cloud에서는 로딩 실패로 확인이 불가함.
+객체참지 구현도 github의 object_detection.py에서 확이 가능함.
+
 # 🤖 Hybrid Vision AI: Multi-Task Image Analyzer
 
 사용자가 업로드한 이미지를 **일반 사물 분류(Classification)**부터 최신 멀티모달 LLM을 활용한 **대화형 시각 분석(VQA)**까지 수행하는 통합 AI 비전 웹 서비스입니다.
@@ -32,7 +35,6 @@ mission_17
 | ![분류 결과 예시](main_image.png) |  |
 | _ViT/DETR 모델을 이용한 분석_ | _Qwen2.5-VL 모델과의 시각적 대화_ |
 
-QWEN 구현은 로컬PC에서는 확인되었으나, Streamlit Cloud에서는 로딩 실패로 확인이 불가함.
 ---
 
 ## 🛠️ 기술 스택 및 사용 모델
